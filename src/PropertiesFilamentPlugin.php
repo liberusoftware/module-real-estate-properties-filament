@@ -9,6 +9,7 @@ use Filament\Panel;
 use Liberu\RealEstate\PropertiesFilament\Resources\PropertyResource;
 use Liberu\RealEstate\PropertiesFilament\Resources\PropertyCategoryResource;
 use Liberu\RealEstate\PropertiesFilament\Resources\PropertyTemplateResource;
+use Liberu\RealEstate\PropertiesFilament\Resources\PropertySavedSearchResource;
 
 final class PropertiesFilamentPlugin implements Plugin
 {
@@ -28,6 +29,7 @@ final class PropertiesFilamentPlugin implements Plugin
             PropertyResource::class,
             PropertyCategoryResource::class,
             PropertyTemplateResource::class,
+            PropertySavedSearchResource::class,
         ]);
     }
 
