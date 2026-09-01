@@ -14,18 +14,19 @@ use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Notifications\Notification;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Liberu\RealEstate\Core\Models\Branch;
-use Liberu\RealEstate\Properties\Application\RecordPropertyKey;
 use Liberu\RealEstate\Properties\Application\EstimatePropertyTax;
+use Liberu\RealEstate\Properties\Application\RecordPropertyKey;
+use Liberu\RealEstate\Properties\Application\TogglePropertyFavorite;
 use Liberu\RealEstate\Properties\Application\TransitionProperty;
 use Liberu\RealEstate\Properties\Application\UpsertPropertyUnit;
 use Liberu\RealEstate\Properties\Domain\PropertyStatus;
@@ -151,13 +152,15 @@ final class PropertyResource extends Resource
                         ->bikeScore($data['bike_score'] ?? null)),
                 Filter::make('favorites_only')
                     ->label('My favorites')
-                    ->query(fn (Builder $query): Builder => auth()->user()?->current_team_id === null ? $query->whereRaw('1 = 0') : $query->favoritedBy(auth()->user()->current_team_id, auth()->id())),
+                    ->query(fn (Builder $query): Builder => auth()->user()?->current_team_id === null
+                        ? $query->whereRaw('1 = 0')
+                        : $query->favoritedBy(auth()->user()->current_team_id, auth()->id())),
             ])
             ->recordActions([
                 EditAction::make(),
                 Action::make('favorite')
                     ->label('Toggle favorite')
-                    ->action(fn (Property $record): bool => app(\Liberu\RealEstate\Properties\Application\TogglePropertyFavorite::class)->handle($record->team_id, auth()->id(), $record->getKey())),
+                    ->action(fn (Property $record): bool => app(TogglePropertyFavorite::class)->handle($record->team_id, auth()->id(), $record->getKey())),
                 Action::make('similar')
                     ->label('Similar properties')
                     ->action(function (Property $record): void {
